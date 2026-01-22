@@ -1,18 +1,45 @@
+from django.db.models import Count
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .services import get_trending_movies
-from .models import FavoriteMovie
-from .serializers import FavoriteMovieSerializer
+from django.core.cache import cache  # Django cache framework (Redis)
+from .models import Movie, FavoriteMovie
+from .serializers import MovieSerializer, FavoriteMovieSerializer, RecommendedMovieSerializer
+from .services import get_recommended_movies_for_user
+
+# TTL for Redis cache (seconds)
+TRENDING_MOVIES_CACHE_TTL = 60 * 5  # 5 minutes
+
 
 class TrendingMoviesView(APIView):
+    """
+    Returns top 10 trending movies based on number of times favorited by users.
+    Uses Redis caching for optimization.
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        movies = get_trending_movies()
-        return Response(movies)
+        # Try to get cached trending movies
+        cached_data = cache.get('trending_movies')
+        if cached_data:
+            return Response(cached_data)
+
+        # Query database if cache is empty
+        trending_movies = Movie.objects.annotate(
+            num_favorites=Count('favorited_by')
+        ).order_by('-num_favorites')[:10]
+
+        serializer = MovieSerializer(trending_movies, many=True)
+        # Cache the result
+        cache.set('trending_movies', serializer.data, TRENDING_MOVIES_CACHE_TTL)
+
+        return Response(serializer.data)
+
 
 class FavoriteMoviesView(APIView):
+    """
+    CRUD for user's favorite movies.
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -24,18 +51,23 @@ class FavoriteMoviesView(APIView):
         serializer = FavoriteMovieSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
+            # Optional: Clear trending cache since favorites changed
+            cache.delete('trending_movies')
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
 
 class RecommendedMoviesView(APIView):
+    """
+    Returns recommended movies for a user.
+    Supports optional filtering, sorting, and pagination.
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Fetch recommendations
         recommendations = get_recommended_movies_for_user(request.user)
 
-        # Filtering by genre (optional query param)
+        # Filter by genre
         genre = request.query_params.get('genre')
         if genre:
             recommendations = [
@@ -43,7 +75,7 @@ class RecommendedMoviesView(APIView):
                 if str(movie.get('genre_ids', [])).find(genre) != -1
             ]
 
-        # Sorting by popularity or release date
+        # Sort by popularity or release date
         sort_by = request.query_params.get('sort_by')
         if sort_by in ['popularity', 'release_date']:
             recommendations.sort(key=lambda x: x.get(sort_by, ''), reverse=True)
@@ -55,7 +87,6 @@ class RecommendedMoviesView(APIView):
         end = start + page_size
         paginated_data = recommendations[start:end]
 
-        # Serialize
         serializer = RecommendedMovieSerializer(paginated_data, many=True)
         return Response({
             "page": page,
