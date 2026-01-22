@@ -5,3 +5,10 @@ class FavoriteMovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = FavoriteMovie
         fields = ['id', 'movie_id', 'title', 'overview', 'poster_path']
+
+
+class RecommendedMovieSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    title = serializers.CharField()
+    overview = serializers.CharField()
+    poster_path = serializers.CharField()

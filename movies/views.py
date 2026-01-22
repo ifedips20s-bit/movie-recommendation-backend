@@ -26,3 +26,12 @@ class FavoriteMoviesView(APIView):
             serializer.save(user=request.user)
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
+
+
+class RecommendedMoviesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        recommendations = get_recommended_movies_for_user(request.user)
+        serializer = RecommendedMovieSerializer(recommendations, many=True)
+        return Response(serializer.data)

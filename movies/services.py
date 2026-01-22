@@ -32,3 +32,35 @@ def get_movie_details(movie_id):
         cache.set(cache_key, data, timeout=60*60)
         return data
     return {}
+
+
+def get_recommended_movies_for_user(user):
+    """
+    Fetch personalized recommendations based on user's favorite movies.
+    """
+    favorites = user.favorites.all()
+    recommendations = []
+
+    for fav in favorites:
+        cache_key = f"recommendations_{fav.movie_id}"
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            recommendations.extend(cached_data)
+            continue
+
+        url = f"{BASE_URL}/movie/{fav.movie_id}/recommendations?api_key={TMDB_API_KEY}"
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json().get('results', [])
+            cache.set(cache_key, data, timeout=60*60)  # Cache each movie's recommendations for 1 hour
+            recommendations.extend(data)
+
+    # Optional: remove duplicates
+    seen = set()
+    unique_recommendations = []
+    for movie in recommendations:
+        if movie['id'] not in seen:
+            seen.add(movie['id'])
+            unique_recommendations.append(movie)
+
+    return unique_recommendations
