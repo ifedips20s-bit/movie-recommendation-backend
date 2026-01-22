@@ -28,6 +28,9 @@ DEBUG = config('DEBUG', cast=bool)
 
 ALLOWED_HOSTS = []
 
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+
 
 # --------------------------------------------------
 # APPLICATIONS

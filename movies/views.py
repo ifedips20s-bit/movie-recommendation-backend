@@ -3,9 +3,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.core.cache import cache  # Django cache framework (Redis)
-from .models import Movie, FavoriteMovie
-from .serializers import MovieSerializer, FavoriteMovieSerializer, RecommendedMovieSerializer
-from .services import get_recommended_movies_for_user
+from movies.models import Movie, FavoriteMovie
+from movies.serializers import (
+    MovieSerializer,
+    FavoriteMovieSerializer,
+    RecommendedMovieSerializer,
+)
+from movies.services import get_recommended_movies_for_user
+
 
 # TTL for Redis cache (seconds)
 TRENDING_MOVIES_CACHE_TTL = 60 * 5  # 5 minutes

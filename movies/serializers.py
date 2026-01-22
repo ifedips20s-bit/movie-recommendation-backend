@@ -1,5 +1,11 @@
 from rest_framework import serializers
-from .models import FavoriteMovie
+from .models import FavoriteMovie, Movie
+
+
+class MovieSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = ['tmdb_id', 'title', 'overview', 'release_date', 'poster_path']
 
 class FavoriteMovieSerializer(serializers.ModelSerializer):
     class Meta:
