@@ -1,6 +1,7 @@
 from rest_framework import generics
 from .models import CustomUser
 from .serializers import UserSerializer
+from .serializers import CustomTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 class UserCreateView(generics.CreateAPIView):
