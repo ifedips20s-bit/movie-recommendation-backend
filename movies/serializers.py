@@ -12,3 +12,6 @@ class RecommendedMovieSerializer(serializers.Serializer):
     title = serializers.CharField()
     overview = serializers.CharField()
     poster_path = serializers.CharField()
+    release_date = serializers.CharField()
+    genre_ids = serializers.ListField(child=serializers.IntegerField())
+    vote_average = serializers.FloatField()

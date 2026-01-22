@@ -32,6 +32,34 @@ class RecommendedMoviesView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        # Fetch recommendations
         recommendations = get_recommended_movies_for_user(request.user)
-        serializer = RecommendedMovieSerializer(recommendations, many=True)
-        return Response(serializer.data)
+
+        # Filtering by genre (optional query param)
+        genre = request.query_params.get('genre')
+        if genre:
+            recommendations = [
+                movie for movie in recommendations
+                if str(movie.get('genre_ids', [])).find(genre) != -1
+            ]
+
+        # Sorting by popularity or release date
+        sort_by = request.query_params.get('sort_by')
+        if sort_by in ['popularity', 'release_date']:
+            recommendations.sort(key=lambda x: x.get(sort_by, ''), reverse=True)
+
+        # Pagination
+        page = int(request.query_params.get('page', 1))
+        page_size = int(request.query_params.get('page_size', 10))
+        start = (page - 1) * page_size
+        end = start + page_size
+        paginated_data = recommendations[start:end]
+
+        # Serialize
+        serializer = RecommendedMovieSerializer(paginated_data, many=True)
+        return Response({
+            "page": page,
+            "page_size": page_size,
+            "total": len(recommendations),
+            "results": serializer.data
+        })
