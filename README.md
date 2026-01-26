@@ -1,144 +1,141 @@
-Movie Recommendation Backend – Project Nexus
-📌 Project Overview
+🎬 Movie Recommendation API
 
-The Movie Recommendation Backend is a real-world backend system designed to provide trending and recommended movies, manage user authentication, and allow users to save favorite movies. This project emphasizes performance, security, and scalability, demonstrating advanced backend engineering skills using Django, PostgreSQL, and Redis.
+A scalable and well-documented backend API for a Movie Recommendation application, built with Django REST Framework, optimized with Redis caching, and fully documented using Swagger (OpenAPI).
 
-🎯 Project Objectives
+This project mirrors real-world backend development practices, focusing on performance, security, and developer-friendly API documentation.
 
-API Creation
+🚀 Features
+🔹 Movie Recommendations
 
-Build endpoints to fetch trending and recommended movies using a third-party API (TMDb).
+Fetch trending movies based on user favorites
 
-Implement robust error handling for reliable responses.
+Generate personalized recommendations
 
-User Management
+Filter recommendations by genre
 
-JWT-based authentication for secure signup/login.
+Sort results by popularity or release date
 
-Allow users to save, retrieve, and manage favorite movies.
+Paginated responses for scalability
 
-Performance Optimization
+🔹 User Authentication & Preferences
 
-Use Redis caching to reduce API call frequency and improve response times.
+JWT-based authentication
 
-Optimize database queries for scalability and efficiency.
+User registration and login
 
-Documentation
+Save and retrieve favorite movies
 
-Use Swagger/OpenAPI to document all endpoints.
+Secure access to protected endpoints
 
-Host documentation at /api/docs for frontend integration.
+🔹 Performance Optimization
 
-🛠 Technologies Used
-Technology	Purpose
-Django	Backend framework for building scalable APIs
-PostgreSQL	Relational database for storing user data and movie preferences
-Redis	Caching system for high-performance endpoints
-JWT	Secure user authentication
-Swagger/OpenAPI	API documentation and testing
-TMDb API	External source for trending and recommended movies
-⚡ Key Features
-1. Movie APIs
+Redis caching for trending movie data
 
-Fetch trending movies and recommendations from TMDb
+Cache invalidation on favorite updates
 
-Return paginated results for large datasets
+Reduced database load and faster response times
 
-Include robust error handling and fallback messages
+🔹 API Documentation
 
-2. User Authentication
+Interactive Swagger UI
 
-Secure JWT-based signup and login endpoints
+Clear request/response schemas
 
-Models to save user favorite movies
+Easy frontend integration
 
-Validation to prevent duplicates in favorites
+🛠️ Tech Stack
 
-3. Caching & Performance
+Backend: Django, Django REST Framework
 
-Cache trending and recommended movie endpoints using Redis
+Database: PostgreSQL
 
-Reduce repeated external API calls
+Caching: Redis (Redis Enterprise Cloud – Free Tier)
 
-Optimize database queries for quick retrieval
+Authentication: JWT
 
-4. API Documentation
+Documentation: Swagger (drf-yasg)
 
-Full Swagger/OpenAPI integration
+Deployment: Render
 
-Hosted documentation accessible at /api/docs
-
-Includes request/response examples and authentication flow
-
-🏗 Project Structure
+📂 Project Structure
 movie-recommendation-backend/
 │
-├── movies/                # Movie-related models, views, serializers
-├── users/                 # Authentication and favorite movie models
-├── cache/                 # Redis caching utilities
-├── docs/                  # Swagger/OpenAPI documentation
-├── requirements.txt       # Dependencies
+├── config/               # Project settings & URLs
+├── movies/               # Movie logic (models, views, services)
+├── users/                # Authentication & user management
+├── staticfiles/          # Collected static files
 ├── manage.py
 └── README.md
 
-📈 Implementation Workflow (Git Commits)
-feat: set up Django project with PostgreSQL
-feat: integrate TMDb API for movie data
-feat: implement movie recommendation endpoints
-feat: add JWT user authentication and favorite movie storage
-perf: add Redis caching for movie endpoints
-docs: integrate Swagger/OpenAPI documentation
-docs: update README.md with setup instructions
+🔑 Authentication
 
-🚀 API Endpoints (Example)
-Authentication
+This API uses JWT authentication.
 
-POST /api/auth/signup/ – Register a new user
+Public Endpoints
 
-POST /api/auth/login/ – Obtain JWT token
+POST /users/register/
 
-Movies
+POST /users/login/
 
-GET /api/movies/trending/ – Get trending movies
+POST /users/token/refresh/
 
-GET /api/movies/recommended/ – Get recommended movies
+GET /api/movies/ (API root)
 
-POST /api/movies/favorites/ – Add movie to favorites
+Protected Endpoints (JWT required)
 
-GET /api/movies/favorites/ – List user favorites
+GET /api/movies/trending/
 
-Swagger Docs
+GET /api/movies/favorites/
 
-/api/docs/ – Explore all API endpoints
+POST /api/movies/favorites/
 
-📊 Evaluation Focus
+GET /api/movies/recommended/
 
-Functionality: Endpoints work as intended with authentication, recommendations, and favorites.
+📖 API Documentation (Swagger)
 
-Code Quality: Modular, clean, well-commented, adhering to Django best practices.
+Swagger UI is available at:
 
-Performance: Redis caching and optimized queries ensure quick responses.
+/api/docs/
 
-Documentation: Detailed Swagger documentation and mentor-ready README.
 
-📦 Deployment
+Example (local):
 
-Host backend on Render, Railway, or Heroku
+http://127.0.0.1:8000/api/docs/
 
-Ensure Swagger docs are live for frontend testing
+⚡ Caching Strategy
 
-Ready for integration with frontend applications
+Trending movies are cached using Redis for 5 minutes
 
-🎬 Demo Script (2–3 minutes)
+Cache is automatically cleared when a user adds a favorite movie
 
-Sign up and login a new user
+Improves response time and reduces database queries
 
-Fetch trending movies
+🧪 Running Locally
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
 
-Fetch recommended movies
+# Install dependencies
+pip install -r requirements.txt
 
-Add a movie to favorites
+# Apply migrations
+python manage.py migrate
 
-Display favorite movies
+# Collect static files
+python manage.py collectstatic
 
-Open Swagger docs and showcase API testing
+# Run server
+python manage.py runserver
+
+✅ Project Status
+
+✔️ API fully functional
+✔️ Authentication secured
+✔️ Redis caching implemented
+✔️ Swagger documentation complete
+✔️ Ready for production deployment
+
+👤 Author
+
+Ifedolapo Ajayi
+Backend Developer
